@@ -239,9 +239,7 @@ class Hexapawn:
         self.root.mainloop()
 
 
-    def trainMatchboxComputer(self, noIterations=1000):
-        lostCount = 0
-
+    def trainMatchboxComputer(self, noIterations=3000):
         m = MatchboxComputer()
         winLossList = [0]
         for iteration in range(noIterations):
@@ -264,15 +262,11 @@ class Hexapawn:
             won = True if winner==self._players[1] else False
             m.updateWeights(won)
 
-            if not won: lostCount += 1
-
-            offset = 1 if won else -1 # 0
+            offset = 1 if won else -20
             winLossList.append(winLossList[-1]+offset)
 
         MatchboxComputer.plotGraph(winLossList)
 
-        print(lostCount)
-        print(len(m.boardStates))
         return m
 
 
@@ -283,7 +277,7 @@ class Hexapawn:
         self.createWindow()
         self.root.mainloop()
 
-class MatchboxComputer:
+"""class MatchboxComputer:
     def __init__(self):
         self.boardStates = {}
         self.resetGame()
@@ -294,21 +288,23 @@ class MatchboxComputer:
         self._resigned = False
 
     def updateWeights(self, won):
+
+        #Populate mirror states
+        self.populateMirrorStates()
+
         if not won:
             index = -2 if self._resigned else -1
-            self.boardStates[self._openBoxes[index]][self._movesMade[-1]] += -1
+
+            self.boardStates[self._openBoxes[index]][self._movesMade[-1]] -= 1
+
+            #Repeat for isomorphically identical states
+            mirrorStartMove = self.getMirroredBoard(self._openBoxes[index])
+            mirrorEndMove = self.getMirroredMove(self._movesMade[-1])
+            if mirrorStartMove != self._openBoxes[index]:
+                self.boardStates[mirrorStartMove][mirrorEndMove] -= 1
+
         self.resetGame()
         self.cleanUpBoardStates()
-
-    def cleanUpBoardStates(self):
-        newBoardStates = {}
-        for Mkey in self.boardStates.keys():
-            newMovesWeights = {}
-            for key, value in self.boardStates[Mkey].items():
-                if value > 0:
-                    newMovesWeights[key] = value
-            newBoardStates[Mkey] = newMovesWeights
-        self.boardStates = newBoardStates
 
     def getMirroredBoard(self, board):
         newBoard = []
@@ -319,9 +315,38 @@ class MatchboxComputer:
     def getMirroredMove(self, move):
         return ((2-move[0][0], move[0][1]),(2-move[1][0], move[1][1]))
 
+    def populateMirrorStates(self):
+        #Populate isomorphically identical states:
+        for index in range(len(self._openBoxes)):
+
+            mirrorStartMove = self.getMirroredBoard(self._openBoxes[index])
+            mirrorEndMove = self.getMirroredBoard(self._movesMade[-1])
+
+            if mirrorStartMove not in self.boardStates:
+                mirroredMoves = {}
+                for key, value in self.boardStates[self._openBoxes[index]].items():
+                    mirroredMoves[self.getMirroredMove(key)] = value
+                self.boardStates[mirrorStartMove] = mirroredMoves
+
+    def cleanUpBoardStates(self):
+        #Remove dead boards from the set of boards to select the next move from
+        newBoardStates = {}
+        for Mkey in self.boardStates.keys():
+            newMovesWeights = {}
+            for key, value in self.boardStates[Mkey].items():
+                if value > 0:
+                    newMovesWeights[key] = value
+            newBoardStates[Mkey] = newMovesWeights
+        self.boardStates = newBoardStates
+
+    def getNextBoard(self, board, move):
+        boardCopy = copy.deepcopy(board.getBoard())
+        boardCopy[move[1][1]][move[1][0]] = boardCopy[move[0][1]][move[0][0]]
+        boardCopy[move[0][1]][move[0][0]] = "-"
+        return boardCopy
+
     def getComputerMove(self, board, playerNum, count):
-        """boardTuple = tuple([tuple(elem) for elem in board.getBoard()])
-        mirrorTuple = self.getMirroredBoard(boardTuple)
+        boardTuple = tuple([tuple(elem) for elem in board.getBoard()])
 
         self._openBoxes.append(boardTuple)
 
@@ -345,41 +370,61 @@ class MatchboxComputer:
         move = random.choice(moves)
         self._movesMade.append(move)
 
-        return move"""
+        return move
 
-        boardTuple = tuple([tuple(elem) for elem in board.getBoard()])
-        mirrorTuple = self.getMirroredBoard(boardTuple)
+    @staticmethod
+    def plotGraph(l):
+        plt.plot(l)
+        plt.xlabel('No games')
+        plt.ylabel('Win/Losses')
+        plt.show()"""
 
-        mirrored = mirrorTuple in self.boardStates
 
-        if (boardTuple not in self.boardStates) and (mirrorTuple not in self.boardStates):
-            #If we haven't encountered this move before
-            self._openBoxes.append(boardTuple)
-            moves = board.getValidMoves(playerNum)
-            defaultWeight = {1:4, 3:3, 5:2, 7:1}[count]
-            movesWeights = {move:defaultWeight for move in moves}
-            self.boardStates[boardTuple] = movesWeights
+
+class MatchboxComputer:
+    def __init__(self):
+        self.matchboxes = []
+        self.resetGame()
+
+    def resetGame(self):
+        self._openBoxes = []
+        self._movesMade = []
+        self._resigned = False
+
+    def updateWeights(self, won):
+        if not won:
+            index = -2 if self._resigned else -1
+            print(self._openBoxes[-1].moves)
+
+            self._openBoxes[index].decrementWeights(self._movesMade[-1])
         else:
-            #If it is a normal board
-            if mirrored:
-                boardTuple = mirrorTuple
+            print(len(self._openBoxes), "won")
 
-            self._openBoxes.append(boardTuple)
-            movesWeights = self.boardStates[boardTuple]
-            moves = []
-            for key,value in movesWeights.items():
-                moves.extend([key]*value)
+        self.resetGame()
+        #exit()
 
-        if len(moves) == 0:
+    def getComputerMove(self, board, playerNum, count):
+        newMatchbox = Matchbox(board, playerNum, count)
+        for matchbox in self.matchboxes:
+            if newMatchbox == matchbox:
+                break
+        else:
+            matchbox = newMatchbox
+            self.matchboxes.append(matchbox)
+
+        #print(matchbox)
+        #print(matchbox.moves)
+        #exit()
+
+        self._openBoxes.append(matchbox)
+
+        move = matchbox.getRandomMove()
+        if move == "Resign":
             self._resigned = True
             return "Resign", "Resign"
 
-        move = random.choice(moves)
         self._movesMade.append(move)
-        if mirrored:
-            return self.getMirroredMove(move)
-        else:
-            return move
+        return move
 
     @staticmethod
     def plotGraph(l):
@@ -392,7 +437,39 @@ class MatchboxComputer:
         return "ai"
 
 
+class Matchbox:
+    defaultWeights = {1:4, 3:3, 5:2, 7:1}
+    def __init__(self, board, playerNum, playDepth):
+        self.board = board
+        self.playerNum = playerNum
+        self.playDepth = playDepth
+        self.setDefaultMoves()
 
+    def getBoardTuple(self):
+        return tuple([tuple(elem) for elem in self.board.getBoard()])
+
+    def setDefaultMoves(self):
+        moves = self.board.getValidMoves(self.playerNum)
+        self.moves = {i:Matchbox.defaultWeights[self.playDepth] for i in moves}
+
+    def getRandomMove(self):
+        rawMoves = []
+        for key,value in self.moves.items():
+            rawMoves.extend([key]*value)
+        return random.choice(rawMoves) if len(rawMoves) != 0 else "Resign"
+
+    def decrementWeights(self, move, amount=1):
+        if self.moves[move] <= 1:
+            #del self.moves[move]
+            self.moves[move] = 0
+        else:
+            self.moves[move] -= amount
+
+    def __eq__(self, other):
+        return self.getBoardTuple() == other.getBoardTuple()
+
+    def __repr__(self):
+        return "\n".join(" ".join(y) for y in self.board.getBoard())
 
 game = Hexapawn()
 game.playAI()

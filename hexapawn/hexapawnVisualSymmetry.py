@@ -239,7 +239,9 @@ class Hexapawn:
         self.root.mainloop()
 
 
-    def trainMatchboxComputer(self, noIterations=3000):
+    def trainMatchboxComputer(self, noIterations=1000):
+        #lostCount = 0
+
         m = MatchboxComputer()
         winLossList = [0]
         for iteration in range(noIterations):
@@ -262,11 +264,14 @@ class Hexapawn:
             won = True if winner==self._players[1] else False
             m.updateWeights(won)
 
-            offset = 1 if won else -20
+            #if not won: lostCount += 1
+
+            offset = 1 if won else -1 # 0
             winLossList.append(winLossList[-1]+offset)
 
         MatchboxComputer.plotGraph(winLossList)
 
+        #print(lostCount)
         return m
 
 
@@ -302,6 +307,15 @@ class MatchboxComputer:
             mirrorEndMove = self.getMirroredMove(self._movesMade[-1])
             if mirrorStartMove != self._openBoxes[index]:
                 self.boardStates[mirrorStartMove][mirrorEndMove] -= 1
+
+
+        """count, mirrors = 0, 0
+        for board in self.boardStates:
+            mirror = self.getMirroredBoard(board)
+            if mirror in self.boardStates and board != mirror:
+                mirrors += 1
+            count += 1
+        print(count - mirrors)"""
 
         self.resetGame()
         self.cleanUpBoardStates()
