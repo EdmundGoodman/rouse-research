@@ -215,7 +215,7 @@ class Tictactoe:
 
 #Initialise the game
 game = Tictactoe()
-game.playHuman()
+game.playAI()
 
 """
 (1, 1) 0.24994
