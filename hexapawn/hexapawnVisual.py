@@ -266,6 +266,7 @@ class Hexapawn:
             winLossList.append(winLossList[-1]+offset)
 
         MatchboxComputer.plotGraph(winLossList)
+        print(len(m.boardStates))
 
         return m
 

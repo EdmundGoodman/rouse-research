@@ -8,10 +8,6 @@ from tkinter import messagebox
 from PIL import Image, ImageTk as itk
 
 
-#Finished and working
-#TODO: add symettry features to speed up training
-
-
 class HexapawnBoard:
     def __init__(self, players=["X", "O"]):
         self._players = players
@@ -239,7 +235,7 @@ class Hexapawn:
         self.root.mainloop()
 
 
-    def trainMatchboxComputer(self, noIterations=1000):
+    def trainMatchboxComputer(self, noIterations=50):
         lostCount = 0
 
         m = MatchboxComputer()
@@ -266,7 +262,7 @@ class Hexapawn:
 
             if not won: lostCount += 1
 
-            offset = 1 if won else -1 # 0
+            offset = 1 if won else -1 #20
             winLossList.append(winLossList[-1]+offset)
 
         MatchboxComputer.plotGraph(winLossList)
@@ -320,33 +316,6 @@ class MatchboxComputer:
         return ((2-move[0][0], move[0][1]),(2-move[1][0], move[1][1]))
 
     def getComputerMove(self, board, playerNum, count):
-        """boardTuple = tuple([tuple(elem) for elem in board.getBoard()])
-        mirrorTuple = self.getMirroredBoard(boardTuple)
-
-        self._openBoxes.append(boardTuple)
-
-        if boardTuple not in self.boardStates:
-            #If we haven't encountered this move before
-            moves = board.getValidMoves(playerNum)
-            defaultWeight = {1:4, 3:3, 5:2, 7:1}[count]
-            movesWeights = {move:defaultWeight for move in moves}
-            self.boardStates[boardTuple] = movesWeights
-            #moves *= defaultWeight
-        else:
-            movesWeights = self.boardStates[boardTuple]
-            moves = []
-            for key,value in movesWeights.items():
-                moves.extend([key]*value)
-
-        if len(moves) == 0:
-            self._resigned = True
-            return "Resign", "Resign"
-
-        move = random.choice(moves)
-        self._movesMade.append(move)
-
-        return move"""
-
         boardTuple = tuple([tuple(elem) for elem in board.getBoard()])
         mirrorTuple = self.getMirroredBoard(boardTuple)
 
