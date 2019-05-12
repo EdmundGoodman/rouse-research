@@ -235,7 +235,7 @@ class Hexapawn:
         self.root.mainloop()
 
 
-    def trainMatchboxComputer(self, noIterations=50):
+    def trainMatchboxComputer(self, noIterations=2000):
         lostCount = 0
 
         m = MatchboxComputer()

@@ -240,6 +240,8 @@ class Hexapawn:
 
 
     def trainMatchboxComputer(self, noIterations=3000):
+        lostCount = 0
+
         m = MatchboxComputer()
         winLossList = [0]
         for iteration in range(noIterations):
@@ -262,11 +264,14 @@ class Hexapawn:
             won = True if winner==self._players[1] else False
             m.updateWeights(won)
 
+            if not won: lostCount += 1
+
             offset = 1 if won else -10 #0
             winLossList.append(winLossList[-1]+offset)
 
         MatchboxComputer.plotGraph(winLossList)
         print(len(m.boardStates))
+        print(lostCount)
 
         return m
 
