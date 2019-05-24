@@ -57,6 +57,12 @@ class NeuralNetwork(object):
         return layer
 
     def forwardpropagate(self, X):
+        """Forward propagate an input vector X through the network composed of
+        the weights self.W1 and self.W2, storing intermediary variables self.z
+        and self.a to allow back propagation, and return the output vector
+        of the process
+        """
+
         #Forward propagate data though the network
         self.z, self.a = [], []
         #From input to hidden layer
@@ -74,6 +80,11 @@ class NeuralNetwork(object):
 
 
     def backwardpropagate(self, X, y, yHat):
+        """Back propagate the error of the most recent forward propagation
+        through the network. producing the arrays self.error and self.delta
+        to allow weight updating
+        """
+
         #Back propagate the error through the network
         self.error, self.delta  = [], []
         #Back propagate from output to the last hidden layer
@@ -87,6 +98,10 @@ class NeuralNetwork(object):
 
 
     def updateWeights(self, X, learnRate):
+        """Update the weights of the network based on the previous pass of back
+        propagation in order to improve the network model
+        """
+
         #Update the hidden layer weights
         j = 0
         for i in reversed(range(len(self.W2))):
