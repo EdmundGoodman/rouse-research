@@ -317,8 +317,6 @@ class Tictactoe:
     def aiNeuralMove(self, nn):
         #Use the neural network to generate move
         iL = np.array(self.board, dtype=str).flatten()
-        #iL = [{"X": 1, "O": 2, "_": 0}.get(item,item) for item in iL]
-        #X = np.nan_to_num(iL/np.amax(iL, axis=0))
         X = np.array([0 if x=="X" else 1 for x in iL]+[0 if x=="O" else 1 for x in iL])
         yHat = nn.forwardpropagate(X)
         print(yHat)

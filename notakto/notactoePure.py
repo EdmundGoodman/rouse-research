@@ -275,7 +275,7 @@ class Notactoe:
             if string == "":
                 children.append("".join(sorted(start+substitution)))
             else:
-                pass 
+                pass
         return list(set(children))
 
     def reducePolynomial(self, polynomial):

@@ -31,6 +31,8 @@ class NeuralNetwork(object):
         self.Lambda = Lambda
         self.dropout = dropout
 
+        return np.round(np.random.randn(xDim,yDim),r)*(1/(numIn+numOut))**0.5
+
         #Generate random weights
         self.generateRandomWeights()
 
@@ -193,6 +195,7 @@ class Trainer:
                 testError = self.getMSError(testY, testYHat)
             else:
                 #Generate minibatches to train the network with
+                combinedData = [(X[i].tolist(), y[i].tolist()) for i in range(len(X)-1)]
                 random.shuffle(combinedData)
                 batchX = np.array([d[0] for d in combinedData[:self.batchSize]])
                 batchY = np.array([d[1] for d in combinedData[:self.batchSize]])

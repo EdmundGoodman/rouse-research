@@ -168,7 +168,6 @@ class Tictactoe:
 
 
     def minimax(self, board, players, utilities=[1,-1,0,0], alpha=-math.inf, beta=math.inf, leafDepth=9, depth=0):
-
         if depth>leafDepth: #Simulate leaf nodes beyond recursion depth
             return utilities[3]
 
@@ -205,8 +204,6 @@ class Tictactoe:
                 nextBoard.setPlayerNum(board.getPlayerNum())
                 nextBoard.makeMove(move)
                 nextBoard.togglePlayer()
-
-                #print(nextBoard)
 
                 func = self.minimax(nextBoard, players, utilities, alpha, beta, leafDepth, depth+1)
 

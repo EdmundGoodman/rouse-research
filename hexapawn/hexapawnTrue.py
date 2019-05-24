@@ -1,7 +1,7 @@
 #http://cs.williams.edu/~freund/cs136-073/GardnerHexapawn.pdf
 import random, copy
 import matplotlib.pyplot as plt
-random.seed(0)
+random.seed(1)
 
 import tkinter as tk
 from tkinter import messagebox
@@ -235,7 +235,7 @@ class Hexapawn:
         self.root.mainloop()
 
 
-    def trainMatchboxComputer(self, noIterations=2000):
+    def trainMatchboxComputer(self, noIterations=50):
         lostCount = 0
 
         m = MatchboxComputer()
@@ -353,8 +353,8 @@ class MatchboxComputer:
     @staticmethod
     def plotGraph(l):
         plt.plot(l)
-        plt.xlabel('No games')
-        plt.ylabel('Win/Losses')
+        plt.xlabel('# Games')
+        plt.ylabel('# Wins - # Losses')
         plt.show()
 
     def __repr__(self):
