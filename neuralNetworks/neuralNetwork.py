@@ -31,8 +31,6 @@ class NeuralNetwork(object):
         self.Lambda = Lambda
         self.dropout = dropout
 
-        return np.round(np.random.randn(xDim,yDim),r)*(1/(numIn+numOut))**0.5
-
         #Generate random weights
         self.generateRandomWeights()
 
