@@ -1,7 +1,8 @@
 #http://cs.williams.edu/~freund/cs136-073/GardnerHexapawn.pdf
 import random, copy
 import matplotlib.pyplot as plt
-random.seed(1)
+
+random.seed(0)
 
 import tkinter as tk
 from tkinter import messagebox
@@ -235,7 +236,7 @@ class Hexapawn:
         self.root.mainloop()
 
 
-    def trainMatchboxComputer(self, noIterations=50):
+    def trainMatchboxComputer(self, noIterations=35000):
         lostCount = 0
 
         m = MatchboxComputer()
@@ -262,7 +263,7 @@ class Hexapawn:
 
             if not won: lostCount += 1
 
-            offset = 1 if won else -1 #20
+            offset = 1 if won else -20 #1
             winLossList.append(winLossList[-1]+offset)
 
         MatchboxComputer.plotGraph(winLossList)
@@ -274,6 +275,7 @@ class Hexapawn:
 
     def playAI(self):
         self.enemy = self.trainMatchboxComputer()
+        #return None
         self.resetGame()
         self.enemy.resetGame()
         self.createWindow()
@@ -365,3 +367,9 @@ class MatchboxComputer:
 
 game = Hexapawn()
 game.playAI()
+"""
+#Test many random seeds, to check if the number of losses/boxes is consistent
+for i in range(30):
+    print("Seed: ", i)
+    random.seed(i)
+    game.playAI()"""

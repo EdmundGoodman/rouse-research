@@ -6,9 +6,6 @@ from visualisation import *
 random.seed(1)
 np.random.seed(1)
 
-#Add pruning
-#Add momentum
-
 
 class NeuralNetwork(object):
     def __init__(self,x,y,z, Lambda=0, dropout=[0]*3):
@@ -415,7 +412,7 @@ def main():
     nn = NeuralNetwork(inputSize, hiddenSize, outputSize, Lambda, dropout)
 
     #Initialise the trainer
-    noEpochs, batchSize, learnRate, printRate = 5000, -1, 0.0005, 500
+    noEpochs, batchSize, learnRate, printRate = 10000, -1, 0.0005, 500
     myTrainer = Trainer(nn, noEpochs, batchSize, learnRate)
 
     #Get the training and testing data
